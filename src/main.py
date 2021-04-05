@@ -2,13 +2,13 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
-from flask import Flask, request, jsonify, url_for
+from flask import Flask, request, jsonify, url_for, json
 from flask_migrate import Migrate
 from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, People, Planet
 #from models import Person
 
 app = Flask(__name__)
@@ -38,6 +38,32 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+@app.route('/people', methods=['GET'])
+def get_people():
+    people_query= People.query.all()
+    all_people= list(map(lambda x: x.serialize(), people_query))
+    return jsonify(all_people),200
+
+    return jsonify(response_body), 200
+
+@app.route('/planet', methods=['GET'])
+def get_planet():
+    planet_query= Planet.query.all()
+    all_planet = list(map(lambda x: x.serialize(), planet_query))
+    return jsonify(all_planet),200
+
+@app.route('/people/<int:id>', methods=['GET'])
+def get_peopleid(id):
+    personid = People.query.get(id)
+    result= personid.serialize()
+    return jsonify(result), 200
+
+@app.route('/planet/<int:id>', methods=['GET'])
+def get_planetid(id):
+    planetid = Planet.query.get(id)
+    result= planetid.serialize()
+    return jsonify(result), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
