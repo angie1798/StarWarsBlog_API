@@ -11,7 +11,7 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return '<User %r>' % self.email
 
     def serialize(self):
         return {
@@ -85,3 +85,23 @@ class People(db.Model):
             # do not serialize the password, its a security breach
         }
 
+class Favorite(db.Model):
+    id=Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    planet_id = Column(Integer, ForeignKey('planet.id'))
+    person_id = Column(Integer, ForeignKey('people.id'))
+    planet = relationship(Planet)
+    person = relationship(People)
+    user = relationship(User)
+
+    def __repr__(self):
+        return '<Favorite %r>' % self.id
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "planet_id": self.planet_id,
+            "person_id": self.person_id
+            # do not serialize the password, its a security breach
+        }
